@@ -41,21 +41,24 @@ class Email(object):
 
     """
 
-    def add_email(self, email):
+    def add_email(self, email, package=None):
         """Add an email address for a participant.
 
         This is called when adding a new email address, and when resending the
         verification email for an unverified email address.
 
         :param unicode email: the email address to add
-
-        :returns: ``None``
+        :param Package package: a package the participant is claiming
 
         :raises EmailAlreadyVerified: if the email is already verified for
             this participant
         :raises EmailTaken: if the email is verified for a different participant
         :raises TooManyEmailAddresses: if the participant already has 10 emails
         :raises Throttled: if the participant adds too many emails too quickly
+
+        :returns: the number of emails sent
+
+        If ``package`` is provided, then
 
         """
 
@@ -67,6 +70,10 @@ class Email(object):
              WHERE e.address = %(email)s
                AND e.verified IS true
         """, locals())
+
+        if package:
+            return self.initiate_package_claim(package, email)
+
         if owner:
             if owner == self.username:
                 raise EmailAlreadyVerified(email)
