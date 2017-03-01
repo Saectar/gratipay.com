@@ -41,6 +41,13 @@ class TestSecurity(Harness):
 
     # ahtr - add_headers_to_response
 
+
+    def test_ahtr_sets_cache_headers(self):
+        headers = self.client.GET('/about/').headers
+        assert headers['Cache-Control'] == 'private, no-cache, no-store, max-age=0'
+        assert headers['Pragma'] == 'no-cache'
+        assert headers['Expires'] == '0'
+
     def test_ahtr_sets_x_frame_options(self):
         headers = self.client.GET('/about/').headers
         assert headers['X-Frame-Options'] == 'SAMEORIGIN'
